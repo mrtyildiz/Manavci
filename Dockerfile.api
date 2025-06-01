@@ -1,0 +1,25 @@
+# Go imajını kullan
+FROM golang:1.24.3-alpine
+
+# Gerekli sistem paketleri
+RUN apk add --no-cache git
+
+# Çalışma dizini
+WORKDIR /go-gin-api
+
+# Go modülleri kopyalanıyor
+COPY ./go-gin-api/go.mod ./
+COPY ./go-gin-api/go.sum ./
+RUN go mod download
+
+# Tüm kaynak kodu kopyalanıyor
+COPY ./go-gin-api/ .
+
+# Uygulama build ediliyor
+RUN go build -o main .
+
+# Port açılıyor
+EXPOSE 8080
+
+# Başlatma komutu
+CMD ["./main"]
