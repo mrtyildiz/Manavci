@@ -1,0 +1,53 @@
+pipeline {
+  agent any
+  environment {
+    REGISTRY_URL = "localhost:5000"
+    IMAGE_NAME = "manavciapi"
+  }
+  stages {
+    stage('Set Version') {
+      steps {
+        script {
+          env.VERSION = "v${env.BUILD_NUMBER}"
+          echo "Using version: ${env.VERSION}"
+        }
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh """
+          docker build -t $IMAGE_NAME:$VERSION /Docker/Manav_API/
+        """
+      }
+    }
+
+    stage('Docker Login') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-registry-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+          sh """
+            echo \$PASSWORD | docker login $REGISTRY_URL -u \$USERNAME --password-stdin
+          """
+        }
+      }
+    }
+
+    stage('Docker Tag & Push') {
+      steps {
+        sh """
+          docker tag $IMAGE_NAME:$VERSION $REGISTRY_URL/$IMAGE_NAME:$VERSION
+          docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
+        """
+      }
+    }
+    stage('Run docker-compose from custom path') {
+      steps {
+        sh """
+          cd /Docker/Manav_API/
+          docker-compose down || true
+          docker-compose up -d --build
+        """
+      }
+    }
+  }
+}
