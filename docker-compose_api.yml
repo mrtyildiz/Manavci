@@ -18,20 +18,30 @@ services:
     #build: .
     image: manavciapi:latest
     container_name: gin_api_container
-    command: ["./main"]
+    #command: ["./main"]
+    command: ["sleep","36000"]
     depends_on:
       - db
     ports:
-      - "5001:8080"
+      - "5001:5001"
     environment:
       DB_HOST: db
       DB_USER: postgres
       DB_PASSWORD: 123123
       DB_NAME: postgres
       DB_PORT: 5432
-   # volumes:
-    #  - ./go-gin-api:/go-gin-api
+    volumes:
+      - ./go-gin-api:/go-gin-api
     restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
 volumes:
   postgres_data:
+  redis_data:
