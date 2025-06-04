@@ -15,6 +15,7 @@ func SetupRoutes(router *gin.Engine) {
 
 		// Location routes
 	router.GET("/locations", controllers.GetLocations)
+//	router.GET("/locationsDB", controllers.GetLocations_DB)
 	router.POST("/locations", controllers.CreateLocation)
 	router.GET("/locations/:id", controllers.GetLocation)
 	router.PUT("/locations/:id", controllers.UpdateLocation)

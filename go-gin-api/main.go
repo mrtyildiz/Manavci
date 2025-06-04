@@ -9,6 +9,7 @@ import (
 func main() {
 	r := gin.Default()
 	config.ConnectDatabase()
+	config.InitRedis()
 	routes.SetupRoutes(r)
 	r.Run(":5001")
 }
